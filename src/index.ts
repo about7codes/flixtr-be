@@ -3,6 +3,7 @@ import morgan from "morgan";
 
 import "./helper/db";
 import UserRoutes from "./routes/User";
+import ErrorHandler from "./middleware/errorHandler";
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -27,6 +28,9 @@ app.get("/ping", (req: Request, res: Response, next: NextFunction) => {
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({ error: "Route not found" });
 });
+
+// Error handler middleware
+app.use(ErrorHandler);
 
 // Start server
 app.listen(PORT, () => {
