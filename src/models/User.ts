@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { config } from "../config";
 
 export interface IUser {
@@ -20,7 +21,7 @@ const userSchema: Schema = new Schema(
       required: true,
       lowercase: true,
       trim: true,
-      maxlength: 6,
+      maxlength: 20,
     },
     email: {
       type: String,
@@ -41,6 +42,18 @@ const userSchema: Schema = new Schema(
   },
   { timestamps: true, versionKey: false }
 );
+
+// Before saving the user, hash the password
+userSchema.pre("save", async function (next) {
+  const user = this as IUserModel;
+
+  if (user.isModified("password")) {
+    const hashedPassword = await bcrypt.hash(user.password, 8);
+    user.password = hashedPassword;
+  }
+
+  next();
+});
 
 // Generate a JWT and return it
 userSchema.methods.genAuthToken = function () {
@@ -70,6 +83,20 @@ userSchema.methods.genRefreshToken = function () {
   );
 
   return token;
+};
+
+// Find a user by email and checking password
+userSchema.methods.findByCredentials = async function (
+  email: string,
+  password: string
+) {
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User does not exists.");
+
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  if (!isPasswordMatch) throw new Error("Invalid login credentials");
+
+  return user;
 };
 
 const User = mongoose.model<IUserModel>("User", userSchema);
