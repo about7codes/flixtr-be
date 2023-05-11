@@ -2,7 +2,8 @@ import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 
 import "./helper/db";
-import UserRoutes from "./routes/User";
+import userRoutes from "./routes/User";
+import watchlistRoutes from "./routes/Watchlist";
 import ErrorHandler from "./middleware/errorHandler";
 
 const PORT = process.env.PORT || 8000;
@@ -12,7 +13,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // Routes
-app.use("/auth", UserRoutes);
+app.use("/auth", userRoutes);
+app.use("/watchlist", watchlistRoutes);
 
 // Server ping route
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
