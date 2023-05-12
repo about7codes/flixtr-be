@@ -2,12 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "../config";
 import User, { IUserModel } from "../models/User";
+import { IWatchlistModel } from "../models/Watchlist";
 
 declare module "express" {
   export interface Request {
     authToken?: string;
     user?: IUserModel;
-    // phrase?: IPhraseModel;
+    media?: IWatchlistModel;
   }
 }
 

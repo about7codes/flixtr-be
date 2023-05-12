@@ -53,7 +53,7 @@ export const Schema = {
       tmdb_id: Joi.string().required().messages({
         "string.empty": "tmdb_id is required.",
       }),
-      media_type: Joi.string().required().messages({
+      media_type: Joi.string().required().valid("movie", "tv").messages({
         "string.empty": "media_type is required.",
       }),
       media_name: Joi.string().required().messages({

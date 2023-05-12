@@ -2,12 +2,14 @@ import mongoose, { Document, Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { config } from "../config";
+import { IWatchlist } from "./Watchlist";
 
 export interface IUser {
   name: string;
   email: string;
   password: string;
   propic: number;
+  userWatchlist: IWatchlist[];
   genAuthToken: () => string;
   genRefreshToken: () => string;
 }
@@ -42,6 +44,13 @@ const userSchema: Schema = new Schema(
   },
   { timestamps: true, versionKey: false }
 );
+
+// Create a virtual field called userWatchlist
+userSchema.virtual("userWatchlist", {
+  ref: "Watchlist",
+  localField: "_id",
+  foreignField: "owner",
+});
 
 // Before saving the user, hash the password
 userSchema.pre("save", async function (next) {

@@ -1,35 +1,30 @@
 import express, { NextFunction, Request, Response } from "express";
 import { authenticate } from "../middleware/auth";
 import { Schema, Validator } from "../middleware/Validator";
+import Watchlist from "../models/Watchlist";
+import {
+  addToWatchlist,
+  deleteMediaById,
+  emptyWatchlist,
+  getMediaById,
+  getWatchlist,
+  mediaById,
+} from "../controllers/Watchlist";
 
 const router = express.Router();
 
+// auth protect all watchlist routes
 router.use(authenticate);
 
-router.get("/all", async (req: Request, res: Response, next: NextFunction) => {
-  res.json({ watchlist: "all" });
-});
+// TODO: add pagination
+router.get("/all", getWatchlist);
+router.get("/:mediaId", getMediaById);
 
-router.post(
-  "/add",
-  Validator(Schema.Watchlist.add),
-  async (req: Request, res: Response, next: NextFunction) => {
-    res.json({ watchlist: "add" });
-  }
-);
+router.post("/add", Validator(Schema.Watchlist.add), addToWatchlist);
 
-router.delete(
-  "/delete",
-  async (req: Request, res: Response, next: NextFunction) => {
-    res.json({ watchlist: "del 1" });
-  }
-);
+router.delete("/deleteall", emptyWatchlist);
+router.delete("/delete/:mediaId", deleteMediaById);
 
-router.delete(
-  "/deleteall",
-  async (req: Request, res: Response, next: NextFunction) => {
-    res.json({ watchlist: "del all" });
-  }
-);
+router.param("mediaId", mediaById);
 
 export default router;
