@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
+import cors from "cors";
 
 import "./helper/db";
 import userRoutes from "./routes/User";
@@ -11,6 +12,17 @@ const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(
+  cors({
+    origin: [
+      "https://flixtr.netlify.app",
+      "https://flixtr.netlify.com",
+      "http://localhost:3001",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
 
 // Routes
 app.use("/auth", userRoutes);
