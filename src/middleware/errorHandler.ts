@@ -12,9 +12,9 @@ const ErrorHandler = (
     if (error.message === "jwt expired") {
       return res.status(400).json({ error: "Session expired, please login." });
     }
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
-  res.status(500).json({ error: "Something went wrong." });
+  return res.status(500).json({ error: "Something went wrong." });
 };
 
 export default ErrorHandler;
