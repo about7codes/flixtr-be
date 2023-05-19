@@ -28,7 +28,7 @@ app.use(
 app.use("/auth", userRoutes);
 app.use("/watchlist", watchlistRoutes);
 
-// Server ping route
+// Server home route
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.json({ message: "Hello fellow developer." });
 });
