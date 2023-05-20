@@ -1,7 +1,6 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import { authenticate } from "../middleware/auth";
 import { Schema, Validator } from "../middleware/Validator";
-import Watchlist from "../models/Watchlist";
 import {
   addToWatchlist,
   deleteMediaById,

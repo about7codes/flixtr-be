@@ -6,12 +6,12 @@ export const mediaById = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  mediaId: string
+  mediaId: number
 ) => {
   try {
     const media = await Watchlist.findOne({
       owner: req.user?._id,
-      _id: mediaId,
+      tmdb_id: mediaId,
     });
 
     if (!media) throw new Error("Media item not found.");
