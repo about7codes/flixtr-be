@@ -13,7 +13,7 @@ export interface IWatchlistModel extends IWatchlist, Document {}
 const watchlistSchema: Schema = new Schema(
   {
     tmdb_id: {
-      type: String,
+      type: Number,
       required: true,
       trim: true,
     },

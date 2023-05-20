@@ -50,7 +50,7 @@ export const Schema = {
 
   Watchlist: {
     add: Joi.object<IWatchlist>({
-      tmdb_id: Joi.string().required().messages({
+      tmdb_id: Joi.number().required().messages({
         "string.empty": "tmdb_id is required.",
       }),
       media_type: Joi.string().required().valid("movie", "tv").messages({
