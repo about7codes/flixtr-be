@@ -72,7 +72,7 @@ userSchema.methods.genAuthToken = function () {
     { id: user._id.toString() },
     config.server.jwtAuthSecret,
     {
-      expiresIn: "15m",
+      expiresIn: "30d",
     }
   );
 
@@ -87,7 +87,7 @@ userSchema.methods.genRefreshToken = function () {
     { id: user._id.toString() },
     config.server.jwtRefreshSecret,
     {
-      expiresIn: "1d",
+      expiresIn: "30d", // increase later if used
     }
   );
 
