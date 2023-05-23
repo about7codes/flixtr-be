@@ -17,6 +17,8 @@ app.use(
     origin: [
       "https://flixtr.netlify.app",
       "https://flixtr.netlify.com",
+      "https://flixtr.vercel.app",
+      "https://flixtr.vercel.com",
       "http://localhost:3001",
       "http://localhost:3000",
     ],
