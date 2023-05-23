@@ -29,12 +29,28 @@ export const getWatchlist = async (
   next: NextFunction
 ) => {
   try {
-    await req.user?.populate("userWatchlist");
-    const userWatchlist = req.user?.userWatchlist;
+    const queryObject = {
+      owner: req.user?._id,
+    };
 
-    if (!userWatchlist) throw new Error("Nothing added to watchlist yet.");
+    const options = {
+      page: (req.query.page as unknown as number) || 1,
+      limit: 20,
+    };
 
-    return res.status(200).json({ watchlist: userWatchlist });
+    const userWatchlist = await Watchlist.paginate(queryObject, options);
+
+    if (!userWatchlist || userWatchlist.totalDocs === 0)
+      throw new Error("Nothing added to watchlist yet.");
+
+    const { docs, page, totalPages, totalDocs } = userWatchlist;
+
+    return res.status(200).json({
+      results: docs,
+      page: page,
+      total_pages: totalPages,
+      total_results: totalDocs,
+    });
   } catch (error) {
     next(error);
   }

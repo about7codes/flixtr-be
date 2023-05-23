@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 export interface IWatchlist {
   tmdb_id: string;
@@ -46,6 +47,11 @@ const watchlistSchema: Schema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-const Watchlist = mongoose.model<IWatchlistModel>("Watchlist", watchlistSchema);
+watchlistSchema.plugin(paginate);
+
+const Watchlist = mongoose.model<
+  IWatchlistModel,
+  mongoose.PaginateModel<IWatchlist>
+>("Watchlist", watchlistSchema);
 
 export default Watchlist;
