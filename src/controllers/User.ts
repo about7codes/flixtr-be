@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User";
 import { verifyRefreshToken } from "../middleware/auth";
+import Watchlist from "../models/Watchlist";
 
 // Create a new User
 export const signup = async (
@@ -119,6 +120,7 @@ export const deleteAccount = async (
     const { user } = req;
     if (!user) throw new Error("User not found.");
 
+    await Watchlist.deleteMany({ owner: user._id });
     await user.deleteOne();
 
     return res.status(200).json({ message: "User deleted." });
