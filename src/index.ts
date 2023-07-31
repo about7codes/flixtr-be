@@ -15,6 +15,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
+      "https://flixtrzzz.netlify.app",
+      "https://flixtrzzz.netlify.com",
       "https://flixtr.netlify.app",
       "https://flixtr.netlify.com",
       "https://flixtr-fe.vercel.app",
