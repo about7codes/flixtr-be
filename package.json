@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm install && tsc",
     "start": "ts-node-dev build/index.js",
     "dev": "npx nodemon src/index.ts"
   },
