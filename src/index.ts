@@ -16,8 +16,7 @@ app.use(
   cors({
     origin: [
       "https://www.flixbaba.com",
-      "http://www.watchbaba.kesug.com",
-      "https://www.watchbaba.kesug.com",
+      "https://dev.flixbaba.com",
       "https://flixtrzzz.netlify.app",
       "https://flixtrzzz.netlify.com",
       "https://flixtr.netlify.app",
