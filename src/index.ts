@@ -25,6 +25,8 @@ app.use(
       "https://flixtr-fe.vercel.com",
       "http://localhost:3001",
       "http://localhost:3000",
+      "http://localhost:6000",
+      "http://localhost:6001",
       "http://164.152.26.217",
     ],
     credentials: true,
