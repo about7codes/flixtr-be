@@ -44,7 +44,7 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 
 // Server ping route
 app.get("/ping", (req: Request, res: Response, next: NextFunction) => {
-  res.json({ message: "pong" });
+  res.json({ message: "pong pong" });
 });
 
 // 404 route handler
