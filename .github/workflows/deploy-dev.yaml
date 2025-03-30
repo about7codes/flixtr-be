@@ -31,5 +31,5 @@ jobs:
           rm .env
           echo "${{ secrets.DEV_ENV }}" > .env
           npm run build
-          pm2 restart "flixtr-be-dev"
+          pm2 restart ¨flixtr-be-dev¨
           EOF
