@@ -17,6 +17,8 @@ app.use(
     origin: [
       "https://www.flixbaba.com",
       "https://dev.flixbaba.com",
+      "https://comments.flixbaba.com",
+      "https://commentsdev.flixbaba.com",
       "https://flixtrzzz.netlify.app",
       "https://flixtrzzz.netlify.com",
       "https://flixtr.netlify.app",

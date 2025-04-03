@@ -9,6 +9,8 @@ import {
   signup,
 } from "../controllers/User";
 import User from "../models/User";
+import jwt from "jsonwebtoken";
+import { config } from "../config";
 
 const router = express.Router();
 
@@ -38,5 +40,33 @@ router.get("/me", authenticate, sendUserProfile);
 router.delete("/me", authenticate, deleteAccount);
 
 router.get("/tokens", sendTokens);
+
+router.get("/commento-token", authenticate, (req: Request, res: Response) => {
+  if (!req.user) throw new Error("User not authenticated");
+
+  const token = jwt.sign(
+    {
+      email: req.user.email,
+      name: req.user.name,
+      external_id: req.user._id.toString(),
+      avatar: req.user.propic
+        ? `${req.headers.origin}/user/avatar/${req.user._id}`
+        : "",
+      link: `${req.headers.origin}/user/${req.user._id}`,
+    },
+    config.server.jwtAuthSecret!,
+    { expiresIn: "30d" }
+  );
+
+  res
+    .cookie("commentoToken", token, {
+      domain: config.server.domain, // Top-level domain for all subdomains
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds,
+    })
+    .json({ success: true });
+});
 
 export default router;
