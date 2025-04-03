@@ -44,19 +44,7 @@ router.get("/tokens", sendTokens);
 router.get("/commento-token", authenticate, (req: Request, res: Response) => {
   if (!req.user) throw new Error("User not authenticated");
 
-  const token = jwt.sign(
-    {
-      email: req.user.email,
-      name: req.user.name,
-      external_id: req.user._id.toString(),
-      avatar: req.user.propic
-        ? `${req.headers.origin}/user/avatar/${req.user._id}`
-        : "",
-      link: `${req.headers.origin}/user/${req.user._id}`,
-    },
-    config.server.jwtAuthSecret!,
-    { expiresIn: "30d" }
-  );
+  const token = req.user.genCommentoToken();
 
   res
     .cookie("commentoToken", token, {

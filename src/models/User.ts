@@ -12,6 +12,7 @@ export interface IUser {
   userWatchlist: IWatchlist[];
   genAuthToken: () => string;
   genRefreshToken: () => string;
+  genCommentoToken: () => string;
 }
 
 export interface IUserModel extends IUser, Document {}
@@ -92,6 +93,22 @@ userSchema.methods.genRefreshToken = function () {
   );
 
   return token;
+};
+
+userSchema.methods.genCommentoToken = function () {
+  const user = this as IUserModel;
+
+  return jwt.sign(
+    {
+      email: user.email,
+      name: user.name,
+      external_id: user._id.toString(),
+      avatar: user.propic || "",
+      link: "",
+    },
+    config.server.jwtAuthSecret, // Reusing your existing auth secret
+    { expiresIn: "30d" }
+  );
 };
 
 // Find a user by email and checking password
