@@ -8,7 +8,7 @@ import {
   signin,
   signup,
 } from "../controllers/User";
-import User, { IUserModel } from "../models/User";
+import User from "../models/User";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
 
@@ -41,36 +41,35 @@ router.delete("/me", authenticate, deleteAccount);
 
 router.get("/tokens", sendTokens);
 
-router.get("/sso", authenticate, async (req: Request, res: Response) => {
-  try {
-    const { user } = req;
-    if (!user) throw new Error("User not authenticated");
+router.get(
+  "/sso",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user } = req;
+      if (!user) throw new Error("User not authenticated");
 
-    // Prepare SSO payload (must match Remark42's expected format)
-    const ssoPayload = {
-      id: user._id.toString(), // Unique user ID
-      name: user?.name || "KIKI", // Display name
-      picture: getProfilePic(user), // Full URL to avatar
-      email: user?.email || "KIKImail", // Optional but recommended
-      admin: false, // Set true for moderators/admins
-    };
+      // Prepare SSO payload (must match Commento's expected format)
+      const ssoPayload = {
+        email: user.email, // Required by Commento
+        name: user.name, // Required by Commento
+        link: "", // Optional
+        avatar: user.propic, // Optional
+        iss: "devbe.flixbaba.com", // Recommended
+        aud: "commento", // Recommended
+        sub: user._id.toString(), // Recommended
+      };
 
-    // Sign the token with your JWT secret (matches AUTH_SSO_SECRET)
-    const token = jwt.sign(ssoPayload, config.server.jwtAuthSecret, {
-      expiresIn: "5m", // Short-lived token for security
-    });
+      // Sign with the same secret used in Commento's docker-compose
+      const token = jwt.sign(ssoPayload, config.server.jwtAuthSecret, {
+        expiresIn: "30d", // Short-lived token for security
+      });
 
-    res.json({ token });
-  } catch (error) {
-    res.status(401).json({ error: "SSO failed" });
+      return res.status(200).json({ token });
+    } catch (error) {
+      next(error);
+    }
   }
-});
-
-// Helper function to construct profile picture URL
-function getProfilePic(user: IUserModel): string {
-  return user.propic
-    ? `https://devbe.flixbaba.com/avatars/${user.propic}.jpg`
-    : "https://devbe.flixbaba.com/avatars/default.jpg";
-}
+);
 
 export default router;
