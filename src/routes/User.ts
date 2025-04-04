@@ -41,20 +41,4 @@ router.delete("/me", authenticate, deleteAccount);
 
 router.get("/tokens", sendTokens);
 
-router.get("/commento-token", authenticate, (req: Request, res: Response) => {
-  if (!req.user) throw new Error("User not authenticated");
-
-  const token = req.user.genCommentoToken();
-
-  res
-    .cookie("commentoToken", token, {
-      domain: config.server.domain, // Top-level domain for all subdomains
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds,
-    })
-    .json({ success: true });
-});
-
 export default router;
