@@ -8,7 +8,7 @@ import {
   signin,
   signup,
 } from "../controllers/User";
-import User from "../models/User";
+import User, { IUserModel } from "../models/User";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
 
@@ -40,5 +40,37 @@ router.get("/me", authenticate, sendUserProfile);
 router.delete("/me", authenticate, deleteAccount);
 
 router.get("/tokens", sendTokens);
+
+router.get("/sso", authenticate, async (req: Request, res: Response) => {
+  try {
+    const { user } = req;
+    if (!user) throw new Error("User not authenticated");
+
+    // Prepare SSO payload (must match Remark42's expected format)
+    const ssoPayload = {
+      id: user._id.toString(), // Unique user ID
+      name: user?.name || "KIKI", // Display name
+      picture: getProfilePic(user), // Full URL to avatar
+      email: user?.email || "KIKImail", // Optional but recommended
+      admin: false, // Set true for moderators/admins
+    };
+
+    // Sign the token with your JWT secret (matches AUTH_SSO_SECRET)
+    const token = jwt.sign(ssoPayload, config.server.jwtAuthSecret, {
+      expiresIn: "5m", // Short-lived token for security
+    });
+
+    res.json({ token });
+  } catch (error) {
+    res.status(401).json({ error: "SSO failed" });
+  }
+});
+
+// Helper function to construct profile picture URL
+function getProfilePic(user: IUserModel): string {
+  return user.propic
+    ? `https://devbe.flixbaba.com/avatars/${user.propic}.jpg`
+    : "https://devbe.flixbaba.com/avatars/default.jpg";
+}
 
 export default router;
