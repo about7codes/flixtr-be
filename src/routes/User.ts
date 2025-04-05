@@ -41,35 +41,4 @@ router.delete("/me", authenticate, deleteAccount);
 
 router.get("/tokens", sendTokens);
 
-router.get(
-  "/sso",
-  authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { user } = req;
-      if (!user) throw new Error("User not authenticated");
-
-      // Prepare SSO payload (must match Commento's expected format)
-      const ssoPayload = {
-        email: user.email, // Required by Commento
-        name: user.name, // Required by Commento
-        link: "", // Optional
-        avatar: user.propic, // Optional
-        iss: "devbe.flixbaba.com", // Recommended
-        aud: "commento", // Recommended
-        sub: user._id.toString(), // Recommended
-      };
-
-      // Sign with the same secret used in Commento's docker-compose
-      const token = jwt.sign(ssoPayload, config.server.jwtAuthSecret, {
-        expiresIn: "30d", // Short-lived token for security
-      });
-
-      return res.status(200).json({ token });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
 export default router;
