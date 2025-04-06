@@ -5,6 +5,7 @@ import cors from "cors";
 import "./helper/db";
 import userRoutes from "./routes/User";
 import watchlistRoutes from "./routes/Watchlist";
+import commentRoutes from "./routes/Comments";
 import ErrorHandler from "./middleware/errorHandler";
 
 const PORT = process.env.PORT || 8000;
@@ -35,6 +36,7 @@ app.use(
 // Routes
 app.use("/auth", userRoutes);
 app.use("/watchlist", watchlistRoutes);
+app.use("/comments", commentRoutes);
 
 // Server home route
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
