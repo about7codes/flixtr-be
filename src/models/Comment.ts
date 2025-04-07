@@ -6,6 +6,8 @@ export interface IComment {
   media_type: "movie" | "tv";
   content: string;
   parentComment?: mongoose.Types.ObjectId | null;
+  season?: number; // only for "tv"
+  episode?: number; // only for "tv"
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +29,18 @@ const commentSchema: Schema = new Schema(
       ref: "Comment",
       default: null,
     }, // null for top-level
+    season: {
+      type: Number,
+      required: function (this: IComment) {
+        return this.media_type === "tv";
+      },
+    },
+    episode: {
+      type: Number,
+      required: function (this: IComment) {
+        return this.media_type === "tv";
+      },
+    },
   },
   { timestamps: true }
 );

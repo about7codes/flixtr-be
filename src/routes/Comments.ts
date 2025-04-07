@@ -10,15 +10,23 @@ router.post(
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { tmdb_id, media_type, content, parentComment } = req.body;
+      const { tmdb_id, media_type, content, parentComment, season, episode } =
+        req.body;
 
-      const comment = await Comment.create({
+      const commentData: any = {
         owner: req.user?._id,
         tmdb_id,
         media_type,
         content,
         parentComment: parentComment || null,
-      });
+      };
+
+      if (media_type === "tv") {
+        commentData.season = season;
+        commentData.episode = episode;
+      }
+
+      const comment = await Comment.create(commentData);
 
       res.status(201).json(comment);
     } catch (error) {
@@ -52,36 +60,65 @@ router.put(
   }
 );
 
-// GET comments via tmdbId /comments/:media_type/:tmdb_id
+// GET /comments/:media_type/:tmdb_id?season=&episode=&page=&limit=
 router.get("/:media_type/:tmdb_id", async (req, res, next) => {
   try {
     const { media_type, tmdb_id } = req.params;
+    const { season, episode, page = 1, limit = 10 } = req.query;
 
-    const comments = await Comment.find({
+    const filter: any = {
       media_type,
-      tmdb_id,
-    })
+      tmdb_id: Number(tmdb_id),
+    };
+
+    // Validate and add season/episode for TV
+    if (media_type === "tv") {
+      if (season === undefined || episode === undefined) {
+        return res.status(400).json({
+          message: "Season and episode are required for TV comments.",
+        });
+      }
+
+      filter.season = Number(season);
+      filter.episode = Number(episode);
+    }
+
+    // Get all matching comments (to preserve reply threading)
+    const allComments = await Comment.find(filter)
+      .sort({ createdAt: -1 }) // Newest first
       .populate("owner", "name propic")
       .lean();
 
-    const commentMap: any = {};
+    // Thread the comments
+    const commentMap: Record<string, any> = {};
     const rootComments: any[] = [];
 
-    comments.forEach((comment) => {
+    allComments.forEach((comment) => {
       // @ts-ignore
       comment.replies = [];
       commentMap[comment._id.toString()] = comment;
     });
 
-    comments.forEach((comment) => {
+    allComments.forEach((comment) => {
       if (comment.parentComment) {
-        commentMap[comment.parentComment.toString()].replies.push(comment);
+        const parent = commentMap[comment.parentComment.toString()];
+        if (parent) parent.replies.push(comment);
       } else {
         rootComments.push(comment);
       }
     });
 
-    res.status(200).json(rootComments);
+    // Pagination logic only for root comments
+    const startIndex = (Number(page) - 1) * Number(limit);
+    const endIndex = startIndex + Number(limit);
+    const paginated = rootComments.slice(startIndex, endIndex);
+
+    res.status(200).json({
+      total: rootComments.length,
+      page: Number(page),
+      limit: Number(limit),
+      comments: paginated,
+    });
   } catch (error) {
     next(error);
   }
