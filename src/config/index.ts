@@ -10,6 +10,7 @@ const MONGO_DB_NAME = process.env.DB_NAME || "";
 
 const JWT_AUTH_SECRET = process.env.JWT_AUTH_SECRET || "";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "";
+const domain = process.env.DOMAIN || "";
 
 export const config = {
   mongodb: {
@@ -19,5 +20,6 @@ export const config = {
   server: {
     jwtAuthSecret: JWT_AUTH_SECRET,
     jwtRefreshSecret: JWT_REFRESH_SECRET,
+    domain: domain,
   },
 };

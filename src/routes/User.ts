@@ -9,6 +9,8 @@ import {
   signup,
 } from "../controllers/User";
 import User from "../models/User";
+import jwt from "jsonwebtoken";
+import { config } from "../config";
 
 const router = express.Router();
 
