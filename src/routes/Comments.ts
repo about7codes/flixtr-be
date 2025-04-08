@@ -71,7 +71,7 @@ router.get("/:media_type/:tmdb_id", async (req, res, next) => {
       tmdb_id: Number(tmdb_id),
     };
 
-    // Validate and add season/episode for TV
+    // Validate and add season/episode for TV comments
     if (media_type === "tv") {
       if (season === undefined || episode === undefined) {
         return res.status(400).json({
@@ -83,22 +83,24 @@ router.get("/:media_type/:tmdb_id", async (req, res, next) => {
       filter.episode = Number(episode);
     }
 
-    // Get all matching comments (to preserve reply threading)
+    // Get all comments (including replies) to support threading
     const allComments = await Comment.find(filter)
       .sort({ createdAt: -1 }) // Newest first
       .populate("owner", "name propic")
       .lean();
 
-    // Thread the comments
+    // Map to track comments by ID for nesting replies
     const commentMap: Record<string, any> = {};
     const rootComments: any[] = [];
 
+    // Prepare comment map and initialize replies array
     allComments.forEach((comment) => {
       // @ts-ignore
       comment.replies = [];
       commentMap[comment._id.toString()] = comment;
     });
 
+    // Nest replies under their parent comment
     allComments.forEach((comment) => {
       if (comment.parentComment) {
         const parent = commentMap[comment.parentComment.toString()];
@@ -108,16 +110,17 @@ router.get("/:media_type/:tmdb_id", async (req, res, next) => {
       }
     });
 
-    // Pagination logic only for root comments
+    // Apply pagination only to root comments
     const startIndex = (Number(page) - 1) * Number(limit);
     const endIndex = startIndex + Number(limit);
-    const paginated = rootComments.slice(startIndex, endIndex);
+    const paginatedRootComments = rootComments.slice(startIndex, endIndex);
 
+    // Send paginated root comments with replies
     res.status(200).json({
-      total: rootComments.length,
+      totalCount: rootComments.length, // total root comments (not replies)
       page: Number(page),
       limit: Number(limit),
-      comments: paginated,
+      comments: paginatedRootComments,
     });
   } catch (error) {
     next(error);
