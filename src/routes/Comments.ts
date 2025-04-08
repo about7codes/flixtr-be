@@ -71,7 +71,7 @@ router.get("/:media_type/:tmdb_id", async (req, res, next) => {
       tmdb_id: Number(tmdb_id),
     };
 
-    // Validate and add season/episode for TV comments
+    // Validate and add season/episode for TV
     if (media_type === "tv") {
       if (season === undefined || episode === undefined) {
         return res.status(400).json({
@@ -83,24 +83,23 @@ router.get("/:media_type/:tmdb_id", async (req, res, next) => {
       filter.episode = Number(episode);
     }
 
-    // Get all comments (including replies) to support threading
+    // Get all comments (including replies)
     const allComments = await Comment.find(filter)
       .sort({ createdAt: -1 }) // Newest first
       .populate("owner", "name propic")
       .lean();
 
-    // Map to track comments by ID for nesting replies
     const commentMap: Record<string, any> = {};
     const rootComments: any[] = [];
 
-    // Prepare comment map and initialize replies array
+    // Initialize replies and build map
     allComments.forEach((comment) => {
       // @ts-ignore
       comment.replies = [];
       commentMap[comment._id.toString()] = comment;
     });
 
-    // Nest replies under their parent comment
+    // Thread replies under parent
     allComments.forEach((comment) => {
       if (comment.parentComment) {
         const parent = commentMap[comment.parentComment.toString()];
@@ -110,14 +109,14 @@ router.get("/:media_type/:tmdb_id", async (req, res, next) => {
       }
     });
 
-    // Apply pagination only to root comments
+    // Pagination logic for root comments
     const startIndex = (Number(page) - 1) * Number(limit);
     const endIndex = startIndex + Number(limit);
     const paginatedRootComments = rootComments.slice(startIndex, endIndex);
 
-    // Send paginated root comments with replies
     res.status(200).json({
-      totalCount: rootComments.length, // total root comments (not replies)
+      totalRootComments: rootComments.length,
+      totalAllComments: allComments.length,
       page: Number(page),
       limit: Number(limit),
       comments: paginatedRootComments,
