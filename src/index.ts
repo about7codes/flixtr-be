@@ -16,10 +16,9 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
+      "https://flixbaba.com",
       "https://www.flixbaba.com",
       "https://dev.flixbaba.com",
-      "https://comments.flixbaba.com",
-      "https://commentsdev.flixbaba.com",
       "https://flixtrzzz.netlify.app",
       "https://flixtrzzz.netlify.com",
       "https://flixtr.netlify.app",
