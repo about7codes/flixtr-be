@@ -60,7 +60,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 // Get Reactions for a Movie or Episode
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { mediaType, mediaId, season, episode } = req.query;
+  const { mediaType, mediaId, season, episode, anonymousId } = req.query;
 
   if (!mediaType || !mediaId) {
     return res.status(400).json({ error: "Missing mediaType or mediaId" });
@@ -93,7 +93,15 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       result[c._id] = c.count;
     });
 
-    res.json(result);
+    // Optionally get user's own reaction
+    let userReaction: string | null = null;
+    if (anonymousId) {
+      const userMatch = { ...match, anonymousId };
+      const userReactionDoc = await MediaReaction.findOne(userMatch);
+      userReaction = userReactionDoc?.type ?? null;
+    }
+
+    res.json({ counts: result, userReaction });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
