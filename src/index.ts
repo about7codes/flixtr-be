@@ -6,6 +6,7 @@ import "./helper/db";
 import userRoutes from "./routes/User";
 import watchlistRoutes from "./routes/Watchlist";
 import commentRoutes from "./routes/Comments";
+import mediaReactionRoutes from "./routes/MediaReaction";
 import ErrorHandler from "./middleware/errorHandler";
 
 const PORT = process.env.PORT || 8000;
@@ -36,6 +37,7 @@ app.use(
 app.use("/auth", userRoutes);
 app.use("/watchlist", watchlistRoutes);
 app.use("/comments", commentRoutes);
+app.use("/mediareaction", mediaReactionRoutes);
 
 // Server home route
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
