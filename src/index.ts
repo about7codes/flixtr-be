@@ -5,7 +5,7 @@ import cors from "cors";
 import "./helper/db";
 import userRoutes from "./routes/User";
 import watchlistRoutes from "./routes/Watchlist";
-import commentRoutes from "./routes/Comments";
+import commentRoutes from "./routes/Comment";
 import mediaReactionRoutes from "./routes/MediaReaction";
 import ErrorHandler from "./middleware/errorHandler";
 
