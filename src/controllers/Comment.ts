@@ -173,7 +173,7 @@ export const getCommentsByMedia = async (
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
 
-    // 1. Fetch paginated root comments
+    // 1. Fetch paginated root comments (top-level comments only)
     const rootFilter = { ...filter, parentComment: null };
 
     const rootComments = await Comment.find(rootFilter)
@@ -183,37 +183,42 @@ export const getCommentsByMedia = async (
       .populate("owner", "name propic")
       .lean();
 
-    // 2. Get all root comment IDs to fetch replies
-    const rootIds = rootComments.map((c) => c._id);
-
-    const replies = await Comment.find({
+    // 2. Fetch ALL replies (regardless of depth) for current filter
+    const allReplies = await Comment.find({
       ...filter,
-      parentComment: { $in: rootIds },
+      parentComment: { $ne: null },
     })
-      .sort({ createdAt: 1 }) // optional: show oldest replies first
+      .sort({ createdAt: 1 }) // show oldest replies first
       .populate("owner", "name propic")
       .lean();
 
-    // 3. Attach replies to corresponding parent
+    // 3. Build a map of all comments (root + replies)
+    const allComments = [...rootComments, ...allReplies];
     const commentMap: Record<string, any> = {};
-    rootComments.forEach((comment) => {
+
+    allComments.forEach((comment) => {
       // @ts-ignore
       comment.replies = [];
       commentMap[comment._id.toString()] = comment;
     });
 
-    replies.forEach((reply) => {
+    // 4. Attach each reply to its correct parent
+    allReplies.forEach((reply) => {
       // @ts-ignore
-      const parent = commentMap[reply.parentComment.toString()];
-      if (parent) parent.replies.push(reply);
+      const parentId = reply.parentComment.toString();
+      const parent = commentMap[parentId];
+      if (parent) {
+        parent.replies.push(reply);
+      }
     });
 
-    // 4. Get total root comments count (for pagination)
+    // 5. Get total root comment count (for pagination)
     const totalRootComments = await Comment.countDocuments(rootFilter);
 
+    // 6. Return only root comments, replies are nested
     res.status(200).json({
       totalRootComments,
-      totalAllComments: totalRootComments + replies.length,
+      totalAllComments: totalRootComments + allReplies.length,
       page: pageNumber,
       limit: limitNumber,
       comments: rootComments,
