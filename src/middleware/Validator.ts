@@ -31,9 +31,9 @@ export const Schema = {
         "string.empty": "Password is required.",
         "string.min": "Password must be at least 6 characters.",
       }),
-      propic: Joi.number().max(10).required().messages({
+      propic: Joi.number().max(20).required().messages({
         "number.empty": "Profile ico is required.",
-        "number.max": "Profile ico must less than 10.",
+        "number.max": "Profile ico must less than 20.",
       }),
     }),
     // Validation for Signin User route
@@ -57,9 +57,9 @@ export const Schema = {
         "string.email": "Email is invalid.",
       }),
 
-      propic: Joi.number().max(10).required().messages({
+      propic: Joi.number().max(20).required().messages({
         "number.empty": "Profile ico is required.",
-        "number.max": "Profile ico must less than 10.",
+        "number.max": "Profile ico must less than 20.",
       }),
     }),
   },
