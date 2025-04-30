@@ -251,3 +251,49 @@ export const deleteComment = async (
     next(error);
   }
 };
+
+// Get all comments (admin only)
+export const getAllComments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const [comments, total] = await Promise.all([
+      Comment.find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("owner", "name email propic"), // adjust fields as needed
+      Comment.countDocuments(),
+    ]);
+
+    return res.status(200).json({
+      comments,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Delete a comment by ID (admin only)
+export const deleteCommentById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const commentId = req.params.id;
+    await Comment.findByIdAndDelete(commentId);
+    return res.status(200).json({ message: "Comment deleted successfully." });
+  } catch (error) {
+    next(error);
+  }
+};

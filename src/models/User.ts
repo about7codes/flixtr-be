@@ -9,6 +9,7 @@ export interface IUser {
   email: string;
   password: string;
   propic: number;
+  isAdmin?: boolean;
   userWatchlist: IWatchlist[];
   genAuthToken: () => string;
   genRefreshToken: () => string;
@@ -41,6 +42,7 @@ const userSchema: Schema = new Schema(
       type: Number,
       required: true,
     },
+    isAdmin: { type: Boolean, default: false },
   },
   { timestamps: true, versionKey: false }
 );

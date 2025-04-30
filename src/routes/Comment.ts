@@ -1,10 +1,12 @@
 import express, { NextFunction, Request, Response } from "express";
-import { authenticate } from "../middleware/auth";
+import { authenticate, requireAdmin } from "../middleware/auth";
 import {
   addComment,
   updateComment,
   deleteComment,
   getCommentsByMedia,
+  getAllComments,
+  deleteCommentById,
 } from "../controllers/Comment";
 
 const router = express.Router();
@@ -20,5 +22,11 @@ router.get("/:media_type/:tmdb_id", getCommentsByMedia);
 
 // DELETE soft delete a comment /comments/:id
 router.delete("/:id", authenticate, deleteComment);
+
+// GET /comments/admin (admin only)
+router.get("/admin", authenticate, requireAdmin, getAllComments);
+
+// DELETE /comments/admin/:id (admin only)
+router.delete("/admin/:id", authenticate, requireAdmin, deleteCommentById);
 
 export default router;
