@@ -3,7 +3,7 @@ services:
   backend:
     build: .
     container_name: flixtr-be-dev
-    user: node  # ← Run as non-root user
+    user: "1001"  # ← Run as non-root user
     restart: unless-stopped
     ports:
       - "6006:6006"  # Dev port

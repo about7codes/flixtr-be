@@ -26,7 +26,12 @@ jobs:
           # Discard local changes to package-lock.json or other files
           git reset --hard HEAD
 
+          # Clean up old containers
+          docker-compose -f docker-compose.dev.yml down
+          # Remove orphaned volumes
+          docker volume prune -f
+
           git pull origin dev
           echo "${{ secrets.DEV_ENV }}" > .env.dev
-          docker-compose -f docker-compose.dev.yml down && docker-compose -f docker-compose.dev.yml up -d --build
+          docker-compose -f docker-compose.dev.yml up -d --build
           EOF

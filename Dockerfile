@@ -2,16 +2,17 @@ FROM node:16.20.2-alpine
 
 WORKDIR /app
 
-# Create non-root user and set permissions
-RUN mkdir -p /tmp/.npm && \
-  chown -R node:node /app /tmp/.npm
+# Create and switch to non-root user (alpine uses numeric UID)
+RUN adduser -D -u 1001 nodeuser && \
+  mkdir -p /tmp/.npm && \
+  chown -R nodeuser:nodeuser /app /tmp/.npm
 
-USER node  # ← Switch to non-root user
+USER nodeuser
 
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci
+COPY --chown=nodeuser:nodeuser package.json package-lock.json ./
+RUN npm ci --cache /tmp/.npm
 
-COPY --chown=node:node . .
+COPY --chown=nodeuser:nodeuser . .
 
 # Production: Build and run JS
 # Development: Skip build (nodemon runs TS directly)
