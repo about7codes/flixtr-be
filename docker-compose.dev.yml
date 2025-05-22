@@ -13,8 +13,6 @@ services:
       - NODE_ENV=development
     env_file:
       - .env.dev
-    networks:
-      - nginx-proxy
     network_mode: host
 
 networks:
