@@ -2,12 +2,16 @@ FROM node:16.20.2-alpine
 
 WORKDIR /app
 
-# Install dependencies (separate layer for caching)
-COPY package.json package-lock.json ./
+# Create non-root user and set permissions
+RUN mkdir -p /tmp/.npm && \
+  chown -R node:node /app /tmp/.npm
+
+USER node  # ← Switch to non-root user
+
+COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci
 
-# Copy all files (source will be volume-mounted in dev)
-COPY . .
+COPY --chown=node:node . .
 
 # Production: Build and run JS
 # Development: Skip build (nodemon runs TS directly)
