@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    container_name: flixtr-be-dev
+    restart: unless-stopped
+    ports:
+      - "6006:6006"  # Dev port
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env.dev
+    command: npm run dev  # nodemon
+    networks:
+      - nginx-proxy
+
+networks:
+  nginx-proxy:
+    external: true
