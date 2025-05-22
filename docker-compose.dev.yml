@@ -15,8 +15,7 @@ services:
       - .env.dev
     networks:
       - nginx-proxy
-    extra_hosts:
-      - "host.docker.internal:10.0.1.1"
+    network_mode: host
 
 networks:
   nginx-proxy:
