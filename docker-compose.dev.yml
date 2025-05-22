@@ -3,20 +3,16 @@ services:
   backend:
     build: .
     container_name: flixtr-be-dev
-    user: "1001"  # ← Run as non-root user
     restart: unless-stopped
     ports:
-      - "6006:6006"  # Dev port
+      - "6006:6006" # Dev port
     volumes:
       - .:/app
       - /app/node_modules
-      - /tmp/.npm:/tmp/.npm  # ← Persist npm cache
     environment:
-      - NPM_CONFIG_CACHE=/tmp/.npm  # ← Custom cache path
       - NODE_ENV=development
     env_file:
       - .env.dev
-    command: sh -c "npm run dev"
     networks:
       - nginx-proxy
 
