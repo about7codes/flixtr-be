@@ -9,6 +9,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - /tmp/.npm:/tmp/.npm  # Persist npm cache
     environment:
       - NODE_ENV=development
     env_file:
