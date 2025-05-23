@@ -13,4 +13,4 @@ RUN npm ci --no-audit --prefer-offline
 
 COPY . .
 
-CMD ["npx", "nodemon", "src/index.ts"]  # Simplified for dev
+CMD npx nodemon src/index.ts  # Simplified for dev
