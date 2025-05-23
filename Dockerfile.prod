@@ -1,11 +1,10 @@
-# Production Dockerfile
 FROM node:16.14.0-alpine AS builder
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --include=dev  # Install TypeScript
+RUN npm ci --include=dev
 COPY . .
-RUN npm run build  # Compile TS->JS
+RUN npm run build
 
 FROM node:16.14.0-alpine
 WORKDIR /app
@@ -13,7 +12,5 @@ COPY --from=builder /app/build ./build
 COPY --from=builder /app/node_modules ./node_modules
 COPY package*.json ./
 
-# Configure npm
-RUN npm config set update-notifier false --global
-
-CMD ["node", "build/index.js"]  # Directly run compiled JS
+# Use proper CMD syntax (remove brackets)
+CMD node build/index.js
