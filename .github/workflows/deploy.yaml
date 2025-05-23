@@ -30,10 +30,11 @@ jobs:
           # Discard local changes to package-lock.json or other files
           git reset --hard HEAD
 
+          docker-compose -f docker-compose.yml down
+          docker system prune -f
+
           git pull origin main
-          npm install
-          rm .env
-          echo "${{ secrets.PRODUCTION_ENV }}" > .env
-          npm run build
-          pm2 restart flixtr-be
+          echo "${{ secrets.PRODUCTION_ENV }}" > .env.production
+          docker-compose -f docker-compose.yml build --no-cache
+          docker-compose -f docker-compose.yml up -d
           EOF

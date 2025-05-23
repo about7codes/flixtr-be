@@ -2,15 +2,12 @@ version: '3.8'
 services:
   backend:
     build: .
-    container_name: flixtr-be-dev
+    container_name: flixtr-be-prod
     restart: unless-stopped
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
     env_file:
-      - .env.dev
+      - .env.production
+    environment:
+      - NODE_ENV=production
     network_mode: host
 
 networks:
