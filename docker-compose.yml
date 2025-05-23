@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.prod  # Point to prod Dockerfile
     container_name: flixtr-be-prod
     restart: unless-stopped
     env_file:
