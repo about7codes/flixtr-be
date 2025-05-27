@@ -22,6 +22,7 @@ app.use(
       "https://www.flixbaba.com",
       "https://www.flixbaba.net",
       "https://dev.flixbaba.com",
+      "https://dev.flixbaba.net",
       // "http://localhost:3001",
       // "http://localhost:3000",
       // "http://localhost:6000",
